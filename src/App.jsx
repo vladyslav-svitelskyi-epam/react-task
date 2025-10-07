@@ -1,112 +1,76 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import './App.css'
-
-function getRandomMatrix(rows, cols) {
-  const matrix = [];
-  for (let i = 0; i < rows; i++) {
-    const row = [];
-    for (let j = 0; j < cols; j++) {
-      row.push(Math.floor(Math.random() * 1001));
-    }
-    matrix.push(row);
-  }
-  return matrix;
-}
-
-function getClosestCells(matrix, rowIdx, colIdx, k) {
-  const flat = [];
-  for (let i = 0; i < matrix.length; i++) {
-    for (let j = 0; j < matrix[0].length; j++) {
-      if (i === rowIdx && j === colIdx) continue;
-      flat.push({
-        value: matrix[i][j],
-        row: i,
-        col: j,
-      });
-    }
-  }
-  flat.sort((a, b) => Math.abs(a.value - matrix[rowIdx][colIdx]) - Math.abs(b.value - matrix[rowIdx][colIdx]));
-  return flat.slice(0, k).map(cell => `${cell.row}-${cell.col}`);
-}
+import Cell from './Cell'
+import {getClosestCells, getRandomMatrix} from "./utils.js";
 
 function App() {
   const [rows, setRows] = useState(10);
   const [cols, setCols] = useState(10);
   const [k, setK] = useState(3);
   const [matrix, setMatrix] = useState(() => getRandomMatrix(10, 10));
-  const [hovered, setHovered] = useState(null);
-  const [highlighted, setHighlighted] = useState([]);
+  const [hoveredCell, setHoveredCell] = useState(null); // {i, j} or null
+
+  const [draftRows, setDraftRows] = useState(rows);
+  const [draftCols, setDraftCols] = useState(cols);
+  const [draftK, setDraftK] = useState(k);
 
   const regenerate = () => {
-    setMatrix(getRandomMatrix(rows, cols));
-    setHovered(null);
-    setHighlighted([]);
+    setRows(draftRows);
+    setCols(draftCols);
+    setK(draftK);
+    setMatrix(getRandomMatrix(draftRows, draftCols));
+    setHoveredCell(null);
   };
 
   const handleMouseEnter = (i, j) => {
-    setHovered(`${i}-${j}`);
-    setHighlighted(getClosestCells(matrix, i, j, k));
+    setHoveredCell({i, j});
   };
 
   const handleMouseLeave = () => {
-    setHovered(null);
-    setHighlighted([]);
+    setHoveredCell(null);
   };
 
+  const highlighted = useMemo(() => {
+    if (!hoveredCell) return [];
+    return getClosestCells(matrix, hoveredCell.i, hoveredCell.j, k);
+  }, [matrix, hoveredCell, k]);
+
   return (
-    <div style={{ padding: 20 }}>
-      <div style={{ marginBottom: 16 }}>
+    <div className="matrix-container">
+      <div className="matrix-controls">
         <label>
-          Rows (M): <input type="number" min={1} max={200} value={rows} onChange={e => setRows(Number(e.target.value))} />
+          Rows (M): <input type="number" min={1} max={200} value={draftRows} onChange={e => setDraftRows(Number(e.target.value))} />
         </label>
         <label style={{ marginLeft: 12 }}>
-          Columns (N): <input type="number" min={1} max={200} value={cols} onChange={e => setCols(Number(e.target.value))} />
+          Columns (N): <input type="number" min={1} max={200} value={draftCols} onChange={e => setDraftCols(Number(e.target.value))} />
         </label>
         <label style={{ marginLeft: 12 }}>
-          Neighbors (K): <input type="number" min={1} max={rows*cols-1} value={k} onChange={e => setK(Number(e.target.value))} />
+          Neighbors (K): <input type="number" min={1} max={draftRows*draftCols-1} value={draftK} onChange={e => setDraftK(Number(e.target.value))} />
         </label>
         <button style={{ marginLeft: 12 }} onClick={regenerate}>Generate</button>
       </div>
       <div
+        className="matrix-grid"
         style={{
-          display: 'grid',
           gridTemplateColumns: `repeat(${cols}, 32px)`,
-          gridTemplateRows: `repeat(${rows}, 32px)`,
-          gap: 2,
+          gridTemplateRows: `repeat(${rows}, 32px)`
         }}
       >
-        {matrix.map((row, i) =>
-          row.map((cell, j) => {
+        {Array.from({ length: rows }).map((_, i) =>
+          Array.from({ length: cols }).map((_, j) => {
+            const cell = matrix[i]?.[j] ?? '';
             const key = `${i}-${j}`;
-            const percent = cell;
-            const isHovered = hovered === key;
+            const isHovered = hoveredCell && hoveredCell.i === i && hoveredCell.j === j;
             const isHighlighted = highlighted.includes(key);
             return (
-              <div
+              <Cell
                 key={key}
+                value={cell}
+                isHovered={isHovered}
+                isHighlighted={isHighlighted}
                 onMouseEnter={() => handleMouseEnter(i, j)}
                 onMouseLeave={handleMouseLeave}
-                style={{
-                  width: 32,
-                  height: 32,
-                  border: '1px solid #888',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'relative',
-                  background: isHovered
-                    ? `linear-gradient(to top, #4caf50 ${percent}%, transparent ${percent}%)`
-                    : isHighlighted
-                    ? '#ffe082'
-                    : '#fff',
-                  transition: 'background 0.2s',
-                  cursor: 'pointer',
-                  fontSize: 12,
-                  fontWeight: isHovered ? 'bold' : 'normal',
-                }}
-              >
-                {cell}
-              </div>
+              />
             );
           })
         )}

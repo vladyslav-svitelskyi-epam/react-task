@@ -1,18 +1,19 @@
-# React + Vite
+## React Task
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Create 3 input fields:**
+1. Number of rows (`M`)
+2. Number of columns (`N`)
+3. Number of neighboring elements (`K`)
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Fill a matrix of size `M x N` with random numbers from 0 to 100.
+- Each number should be in its own cell styled as a square with a border (styling is optional).
+- On hovering over a cell, fill it with color according to the percentage of the number inside (e\.g\. 77 means 77% filled).
+- On hovering over a cell, highlight the `K` closest cells by value.
 
-## React Compiler
+---
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
-
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**Requirements:**
+- Implement using React components without using tables.
+- Performance will be measured starting from `100 x 100`.

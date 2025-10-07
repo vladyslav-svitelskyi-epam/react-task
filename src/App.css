@@ -40,3 +40,38 @@
 .read-the-docs {
   color: #888;
 }
+
+.matrix-container {
+  padding: 20px;
+}
+
+.matrix-controls {
+  margin-bottom: 16px;
+}
+
+.matrix-grid {
+  display: grid;
+  gap: 2px;
+}
+
+.cell {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #888;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: #fff;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s, font-weight 0.2s;
+}
+
+.cell-hovered {
+  font-weight: bold;
+}
+
+.cell-highlighted {
+  background: #ffe082;
+}
