@@ -56,9 +56,8 @@ function App() {
           gridTemplateRows: `repeat(${rows}, 32px)`
         }}
       >
-        {Array.from({ length: rows }).map((_, i) =>
-          Array.from({ length: cols }).map((_, j) => {
-            const cell = matrix[i]?.[j] ?? '';
+        {matrix.map((row, i) =>
+          row.map((cell, j) => {
             const key = `${i}-${j}`;
             const isHovered = hoveredCell && hoveredCell.i === i && hoveredCell.j === j;
             const isHighlighted = highlighted.includes(key);
